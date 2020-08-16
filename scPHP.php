@@ -1,6 +1,6 @@
 <?php
-
-/*ini_set('display_errors',1);
+/*
+ini_set('display_errors',1);
 ini_set('display_startup_errors',1);
 error_reporting(E_ALL);
 */
@@ -25,8 +25,7 @@ function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
     sc_dom_etiqueta_fin($etiqueta);
 }
 
-function sc_echo($t,$valor=''){
-
+function sc_echo($t){
     echo("<p>$t</p>");
 }
 
@@ -276,39 +275,77 @@ function sc_url_borrar_cookies($depurar=false){
 function sc_url_get_id_youtube($urlYoutube){
     $expresionUrl     = sc_str_corregir_expresion_regular('((((m|www)\.)?youtube\.com)|(youtu\.be))\/(.)+');
     $expresionIdVideo = sc_str_corregir_expresion_regular('(((\?v=)\w+)|be\/\w+)');
+
     return (sc_str_incluye_expresion_regular($urlYoutube,$expresionUrl)) ?
         substr(sc_str_extraer_expresion_regular($urlYoutube, $expresionIdVideo),3) :
         false;
 }
 
-function sc_url_generar_iframe_youtube($link,$altura='423',$acho='240',$depurar=false){
-    sc_dev_depurar($depurar,array($link,$altura='423',$acho='240'),'sc_url_generar_iframe_youtube');
+function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho='100%',$class="pt-2",$depurar=false){
+    sc_dev_depurar($depurar,array($link,$altura,$ancho),'sc_url_generar_iframe_youtube');
     $enlace = sc_url_get_id_youtube(sc_str_quitar_espacios_blancos($link));
     if($enlace){
-        $altura = sc_str_incluye_expresion_regular($altura,'\d+(\%|px)')?($altura):($altura.'px');
-        $acho   = sc_str_incluye_expresion_regular($acho  ,'\d+(\%|px)')?($acho)  :  ($acho.'px');
-        echo '
-            <iframe width="'.$acho.'" height="'.$altura.'" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen 
-                src="https://www.youtube.com/embed/'.$enlace.'">
-            </iframe>
+        $altura = sc_str_incluye_expresion_regular($altura,'\d+(\%|px|vh|vmin|vw)')?($altura):($altura.'px');
+        $ancho   = sc_str_incluye_expresion_regular($ancho  ,'\d+(\%|px|vh|vmin|vw)')?($ancho)  :  ($ancho.'px');
+        $iframe = '
+            <div id="contenedor-iframe-yt-'.$enlace.'" class="'.$class.'">
+                <iframe id="iframe-yt-'.$enlace.'" style="width:'.$ancho.'; height:'.$altura.';" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen 
+                    src="https://www.youtube.com/embed/'.$enlace.'">
+                </iframe>
+            </div>
         ';
+        if ($return){
+            return $iframe;
+        }
+        echo $iframe;
         return true;
     }else{
         return false;
     }
 }
 
-function sc_url_crear_array_slug_to_get($arrayName){
-    $urlPartsTmp = explode('/',$_SERVER['REQUEST_URI']);
-    $i           = 0;
+function dev_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/archivos/logos'){
+    $url = (sc_str_inicia_con($url,'http://') || sc_str_inicia_con($url,'https://'))?
+        $url :
+        'http://'.$url ;
+    $url = parse_url($url)['host'];
+    $nombreImagen = (sc_str_inicia_con($url,'www.'))?
+        $url :
+        'www.'.$url ;
+    $nombreImagen = urlencode($nombreImagen);
+    //sc_dev_echo_indice($url,$direccionCarpeta);
+    //sc_var_dump(is_file(SERVERURL . "$direccionCarpeta/$nombreImagen"));
 
-    foreach ($urlPartsTmp as $urlPart){
-        if(strlen($urlPart)>1 || (int)$urlPart!=0){
-            $urlParts[$arrayName[$i]] = $urlPart;
-            $i++;
+    if (!is_file(SERVERURL . "$direccionCarpeta/$nombreImagen")) {
+        //abrimos un fichero donde guardar la descarga de la web
+        //sc_var_dump("$direccionCarpeta/$nombreImagen.png");
+        $fp = fopen("$direccionCarpeta/$nombreImagen.png", "w");
+        //sc_var_dump("https://www.google.com/s2/favicons?domain=$url");
+
+        if($fp){
+            // Se crea un manejador CURL
+            $ch=curl_init();
+
+            // Se establece la URL y algunas opciones
+            curl_setopt($ch, CURLOPT_URL, "https://www.google.com/s2/favicons?domain=$url");
+            //determina donde guardar el fichero
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+
+            // Se obtiene la URL indicada
+            curl_exec($ch);
+
+            // Se cierra el recurso CURL y se liberan los recursos del sistema
+            curl_close($ch);
+
+            //se cierra el manejador de ficheros
+            fclose($fp);
+            //sc_var_dump('Subió',null,'w-100');
+            return true;
         }
+
     }
-    return $urlParts;
+    //sc_var_dump('No subió',null,'w-100');
+    return false;
 }
 
 /*SQL*/
@@ -325,7 +362,7 @@ function sc_sql_lookup($sql){
             $sqlResult = $query->fetchAll();
             return $sqlResult;
         }else{
-            return $datos[0][0] = '<p class="alert-danger">No se han hallado datos</p>';
+            return false;
         }
     } catch (Exception $e) {
         return '<p class="alert-danger">No funcionó</p>';
@@ -357,6 +394,10 @@ function sc_sql_exec_sql($sql,$array=null){
     global $pdoLibreria;
     $query = $pdoLibreria->prepare($sql);
 
+    foreach ( $array as &$valor){
+        $valor = (is_string($valor)) ? nl2br( htmlentities($valor) ) : $valor;
+    }
+
     try {
         $query->execute($array);
         return true;
@@ -365,6 +406,7 @@ function sc_sql_exec_sql($sql,$array=null){
         return false;
     }
 }
+
 
 /*JAVASCRIPT*/
 
@@ -401,6 +443,7 @@ function sc_str_generar_enlaces_html_de_string($texto,$depurar=false){
             )
         ),
         'sc_str_generar_enlaces_html_de_string');
+    $texto = sc_str_reemplazar_expresion_regular($texto,'&amp;','&');
     return preg_replace(
         '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
         "<a href=\"$1\" target=\"_blank\">$3</a>$4",
@@ -437,10 +480,17 @@ function sc_str_extraer_expresion_regular($t,$expresion,$depurar=false){
     $coincidencias = false;
 
     if(sc_str_incluye_expresion_regular($t,$expresion)){
-        preg_match($expresion,$t,$coincidencias,PREG_OFFSET_CAPTURE);
-        $coincidencias = ($coincidencias[0][0]) ?
-            $coincidencias[0][0]:
-            false;
+        preg_match_all($expresion,$t,$coincidencias,PREG_OFFSET_CAPTURE);
+        $arrayResutl = array();
+
+        for ($i=0,$iMax=count($coincidencias[0]);$i<$iMax;$i++ ){
+            $valor=$coincidencias[0];
+            for ($j=0 ;$j<$iMax;$j++){
+                $arrayResutl[$j] = ($valor[$j][0]);
+            }
+        }
+
+        $coincidencias = count($arrayResutl)>1? $arrayResutl : $arrayResutl[0];
     }
     return $coincidencias;
 }
@@ -462,6 +512,40 @@ function sc_str_quitar_espacios_extra($t,$depurar=false){
 function sc_str_quitar_espacios_blancos($t,$depurar=false){
     sc_dev_depurar($depurar,$t);
     return trim(sc_str_reemplazar_expresion_regular($t,'(\n|\s|\t|\r)+',''));
+}
+
+function sc_str_sin_caracteres_especiales($texto,$quitarTodos=true){
+    if(isset($texto{1})){
+        //Aquí añades las letras que no quieres que se usen
+        $vocalesNoPermitidas    = array('á','é','í','ó','ú','ñ');
+        $vocalesNoPermitidasMay = array('Á','É','Í','Ó','Ú','Ñ');
+
+        //Aquí añades las letras que quieres que se usen
+        $vocalesPermitidas      = array('a','e','i','o','u','ni');
+
+        //Aquí añades los caracteres que no quieres que se usen
+        $caracteresNoPermitidos = array('?','\"','\'');
+
+        $texto = strtolower($texto);
+
+        for($i=0, $iMax = count($vocalesNoPermitidas); $i< $iMax; $i++){
+            $texto = str_replace($vocalesNoPermitidas   [$i], $vocalesPermitidas[$i], $texto);
+            $texto = str_replace($vocalesNoPermitidasMay[$i], $vocalesPermitidas[$i], $texto);
+        }
+
+        for($i=0, $iMax = count($caracteresNoPermitidos); $i< $iMax; $i++){
+            $texto = str_replace($caracteresNoPermitidos[$i], '_', $texto);
+        }
+
+        //Esta parte reemplaza los espacios en blanco " " y los guiones "-" por guiones bajos "_"
+        $texto = sc_str_reemplazar_expresion_regular($texto,'(\s+|\-+|_+)+',"_");
+
+        if($quitarTodos){
+            $texto = sc_str_reemplazar_expresion_regular($texto,'\W','');
+            $texto = sc_str_reemplazar_expresion_regular($texto,'(\s+|\-+|_+)+',"_");
+        }
+    }
+    return $texto;
 }
 
 /*FECHAS*/
@@ -488,4 +572,3 @@ function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
 }
 
 ?>
-
