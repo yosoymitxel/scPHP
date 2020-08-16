@@ -25,8 +25,9 @@ function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
     sc_dom_etiqueta_fin($etiqueta);
 }
 
-function sc_echo($t){
-    echo("<p>$t</p>");
+function sc_echo($t,$valor=''){
+    $valor = ($valor!='') ?  ' : '.$valor: '';
+    echo("<p>$t$valor</p>");
 }
 
 function sc_dev_echo_indice($titulo,$texto,$etiqueta='p',$id='',$class='',$style='',$name=''){
