@@ -9,7 +9,6 @@ error_reporting(E_ALL);
 /*DEV*/
 
 function sc_dev_activar_depurar_global($condicion){
-    echo 'asdf';
     $condicion = ($condicion)?1:0;
     ini_set('display_errors',$condicion);
     ini_set('display_startup_errors',$condicion);
@@ -17,21 +16,17 @@ function sc_dev_activar_depurar_global($condicion){
 }
 
 function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
-    if(li_es_admin()){
         echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
             "<pre id='$id' class='$class' style='$style'>" :
             "<$etiqueta id='$id' class='$class' style='$style'>";
         var_dump($obj);
         echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
         sc_dom_etiqueta_fin($etiqueta);
-    }
 }
 
 function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
-    if(li_es_admin()){
-        $valor = ($valor!='') ?  ' : '.$valor: '';
-        echo("<p id='$id' class='$class' style='$style' name='$name'>$t$valor</p>");
-    }
+    $valor = ($valor!='') ?  ' : '.$valor: '';
+    echo("<$etiqueta id='$id' class='$class' style='$style' name='$name'>$t$valor</$etiqueta>");
 }
 
 function sc_dev_echo_indice($titulo,$texto,$etiqueta='p',$id='',$class='',$style='',$name=''){
