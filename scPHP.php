@@ -17,17 +17,21 @@ function sc_dev_activar_depurar_global($condicion){
 }
 
 function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
-    echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
-        "<pre id='$id' class='$class' style='$style'>" :
-        "<pre>";
-    var_dump($obj);
-    echo '</pre>';
-    sc_dom_etiqueta_fin($etiqueta);
+    if(li_es_admin()){
+        echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
+            "<pre id='$id' class='$class' style='$style'>" :
+            "<$etiqueta id='$id' class='$class' style='$style'>";
+        var_dump($obj);
+        echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
+        sc_dom_etiqueta_fin($etiqueta);
+    }
 }
 
-function sc_echo($t,$valor=''){
-    $valor = ($valor!='') ?  ' : '.$valor: '';
-    echo("<p>$t$valor</p>");
+function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
+    if(li_es_admin()){
+        $valor = ($valor!='') ?  ' : '.$valor: '';
+        echo("<p id='$id' class='$class' style='$style' name='$name'>$t$valor</p>");
+    }
 }
 
 function sc_dev_echo_indice($titulo,$texto,$etiqueta='p',$id='',$class='',$style='',$name=''){
@@ -41,7 +45,7 @@ function sc_dev_contador_texto_para_pruebas($texto='Prueba',$valor = false) {
         $index = 0;
     }
     $index++;
-    echo "<p id='".validarCaracteres($texto)."-$index' class='m-0 p-0 w-100'>$texto: $index</p>";
+    echo "<p id='".li_str_url_amigable($texto)."-$index' class='m-0 p-0 w-100'>$texto: $index</p>";
 }
 
 function sc_dev_echo_oculto($texto,$depurar=false,$id='id-oculto',$clase=''){
@@ -252,7 +256,7 @@ function sc_url_metodo_cookies(){
 function sc_url_get_servidor($url){
     $url = explode('.',$url);
 
-    if(dev_existe_en_string($url[0],'www')){
+    if(sc_str_existe_en_string($url[0],'www')){
         $urlProcesada = $url[1];
     }else{
         $urlProcesada = str_replace('https://','',$url[0]);
@@ -273,10 +277,20 @@ function sc_url_borrar_cookies($depurar=false){
     }
 }
 
-function sc_url_get_id_youtube($urlYoutube){
-    $expresionUrl     = sc_str_corregir_expresion_regular('((((m|www)\.)?youtube\.com)|(youtu\.be))\/(.)+');
-    $expresionIdVideo = sc_str_corregir_expresion_regular('(((\?v=)\w+)|be\/\w+)');
+function sc_url_get_youtube_title($video_id){
+    $url = "http://www.youtube.com/watch?v=".$video_id;
 
+    $str = file_get_contents($url);
+    if(strlen($str)>0){
+        $str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
+        preg_match("/\<title\>(.*)\<\/title\>/i",$str,$title); // ignore case
+        return sc_str_reemplazar_expresion_regular($title[1],'/( \- YouTube)/','');
+    }
+}
+
+function sc_url_get_id_youtube($urlYoutube){
+    $expresionUrl     = sc_str_corregir_expresion_regular('(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=(\w+|\-)+|youtu\.be\/(\w+|\-)+)');
+    $expresionIdVideo = sc_str_corregir_expresion_regular('(((\?v=)[\w\-]+)|be\/\w+)');
     return (sc_str_incluye_expresion_regular($urlYoutube,$expresionUrl)) ?
         substr(sc_str_extraer_expresion_regular($urlYoutube, $expresionIdVideo),3) :
         false;
@@ -349,6 +363,21 @@ function dev_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/arc
     return false;
 }
 
+function sc_url_buscar_imagenes_google($busqueda){
+    $img_pattern = '/<img[^>]+>/i';
+    //$datos = array();
+    if ($busqueda != '') {
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://www.google.com.ar/search?q=".urlencode($busqueda.' -vertical -portada')."&source=lnms&tbm=isch&sa=X");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        //Execute the session, returning the results to $curlout, and close.
+        $curlout = curl_exec($ch);
+        curl_close($ch);
+        preg_match_all($img_pattern, $curlout, $img_tags);
+    }
+    return $img_tags;
+}
+
 /*SQL*/
 
 function sc_sql_lookup($sql){
@@ -360,7 +389,7 @@ function sc_sql_lookup($sql){
         $sqlResult = $query->execute(array());
 
         if ($sqlResult) {
-            $sqlResult = $query->fetchAll();
+            $sqlResult = $query->fetchAll(PDO::FETCH_ASSOC);
             return $sqlResult;
         }else{
             return false;
@@ -378,10 +407,22 @@ function sc_sql_secure_lookup($sql,$array=null,$depurar=false){
         $sqlResult = $query->execute($array);
 
         if ($sqlResult) {
-            $sqlResult = $query->fetchAll();
+            $sqlResult = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query = null;
+
             if ($depurar){
+                sc_echo('Debug de sc_sql_secure_lookup (3):');
+                sc_var_dump($sql);
+                sc_var_dump($array);
                 sc_var_dump($sqlResult);
             }
+
+            if (count($sqlResult)==0){
+                foreach ($array as &$valor){
+                    $valor = htmlentities($valor);
+                }
+            }
+
             return count($sqlResult)!=0?$sqlResult:false;
         }else{
             return $datos[0][0] = false;
@@ -400,8 +441,7 @@ function sc_sql_exec_sql($sql,$array=null){
     }
 
     try {
-        $query->execute($array);
-        return true;
+        return $query->execute($array);
     } catch (Exception $exception) {
         echo $exception;
         return false;
