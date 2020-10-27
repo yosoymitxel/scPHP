@@ -1,32 +1,30 @@
 <?php
 /*
-ini_set('display_errors',1);
-ini_set('display_startup_errors',1);
-error_reporting(E_ALL);
+Librería SC PHP
+Fecha de inicio: 11/08/2020
 */
 
 
 /*DEV*/
 
+function sc_dev_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
+    echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
+        "<pre id='$id' class='$class' style='$style'>" :
+        "<$etiqueta id='$id' class='$class' style='$style'>";
+    var_dump($obj);
+    echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
+    sc_dom_etiqueta_fin($etiqueta);
+}
+
+function sc_dev_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
+    $valor = ($valor!='') ?  ' : '.$valor: '';
+    echo("<$etiqueta id='$id' class='$class' style='$style' name='$name'>$t$valor</$etiqueta>");
+}
+
 function sc_dev_activar_depurar_global($condicion){
-    $condicion = ($condicion)?1:0;
     ini_set('display_errors',$condicion);
     ini_set('display_startup_errors',$condicion);
     error_reporting(E_ALL);
-}
-
-function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
-        echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
-            "<pre id='$id' class='$class' style='$style'>" :
-            "<$etiqueta id='$id' class='$class' style='$style'>";
-        var_dump($obj);
-        echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
-        sc_dom_etiqueta_fin($etiqueta);
-}
-
-function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
-    $valor = ($valor!='') ?  ' : '.$valor: '';
-    echo("<$etiqueta id='$id' class='$class' style='$style' name='$name'>$t$valor</$etiqueta>");
 }
 
 function sc_dev_echo_indice($titulo,$texto,$etiqueta='p',$id='',$class='',$style='',$name=''){
@@ -55,9 +53,16 @@ function sc_dev_echo_oculto($texto,$depurar=false,$id='id-oculto',$clase=''){
 
 function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
     if($condicion){
-        sc_dom_etiqueta_inicio('div',"id-$id");
-        sc_dom_crear_elemento('h3',$id,"id-$id");
-        sc_var_dump($obj,"id-$id");
+        sc_dom_etiqueta_inicio('div',"debug-$id",'w-100');
+        sc_dom_crear_elemento('h3',$id,"debug-$id");
+        if(sc_is_array($obj,1)){
+            $i = 0;
+            foreach ($obj as $value){
+                sc_var_dump($value,"var-dump__$id-".++$i);
+            }
+        }else{
+            sc_var_dump($obj,"var-dump__$id");
+        }
         sc_dom_etiqueta_fin('div');
     }
 }
@@ -65,6 +70,14 @@ function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
 function sc_dev_obj_a_bool($obj,$depurar=false){
     sc_dev_depurar($depurar,$obj,'sc_dev_obj_a_bool');
     return !(!$obj);
+}
+
+function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
+    sc_dev_var_dump($obj,$etiqueta,$id,$class,$style);
+}
+
+function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
+    sc_dev_echo($t,$valor,$etiqueta,$id,$class,$style,$name);
 }
 
 
@@ -76,7 +89,7 @@ function sc_dom_get_atributos($arrayAtributos,$depurar=false){
         $atributos = '';
 
         foreach ($arrayAtributos as $atributo => $valor){
-            if($depurar===true){
+            if($depurar){
                 sc_var_dump($atributo.' : '.$valor,'p');
             }
             $atributos .= ($valor)? $atributo.'="'.$valor.'", ' : '';
@@ -456,11 +469,13 @@ function sc_js_console_log($texto){
 
 
 /*STRING*/
-function sc_str_existe_en_string($texto,$busqueda){
+function sc_str_existe_en_string($texto,$busqueda,$depurar=false){
+    sc_dev_depurar($depurar,$texto,'sc_str_existe_en_string');
     return (strpos($texto,$busqueda) !== false);
 }
 
-function sc_str_quitar_espacios_y_lower($texto){
+function sc_str_quitar_espacios_y_lower($texto,$depurar=false){
+    sc_dev_depurar($depurar,$texto,'sc_str_existe_en_string');
     return strtolower(preg_replace('/(\n|\r|\t|\s)/','',$texto));
 }
 
@@ -511,7 +526,7 @@ function sc_str_corregir_expresion_regular($expresion,$depurar=false){
 }
 
 function sc_str_extraer_expresion_regular($t,$expresion,$depurar=false){
-    sc_dev_depurar($depurar,$expresion,'sc_str_extraer_expresion_regular');
+    sc_dev_depurar($depurar,array($t,$expresion),'sc_str_extraer_expresion_regular');
     $expresion     = sc_str_corregir_expresion_regular($expresion);
     $coincidencias = false;
 
@@ -531,22 +546,28 @@ function sc_str_extraer_expresion_regular($t,$expresion,$depurar=false){
     return $coincidencias;
 }
 
-function sc_str_inicia_con($t,$busqueda){
+function sc_str_inicia_con($t,$busqueda,$depurar=false){
+    sc_dev_depurar($depurar,$t,'sc_str_inicia_con');
     return (strpos($t, $busqueda) === 0);
 }
 
-function sc_str_finaliza_con($t,$busqueda){
+function sc_str_finaliza_con($t,$busqueda,$depurar=false){
+    sc_dev_depurar($depurar,$t,'sc_str_finaliza_con');
     $cantidadCaracteres = strlen ($busqueda);
     return ($cantidadCaracteres && substr($t, -$cantidadCaracteres) == $busqueda);
 }
 
+function sc_str_contiene($t,$busqueda,$depurar=false){
+    return sc_str_existe_en_string($t,$busqueda,$depurar);
+}
+
 function sc_str_quitar_espacios_extra($t,$depurar=false){
-    sc_dev_depurar($depurar,$t);
+    sc_dev_depurar($depurar,$t,'sc_str_quitar_espacios_extra');
     return trim(sc_str_reemplazar_expresion_regular($t,'/(\n|\s)+/',' '));
 }
 
 function sc_str_quitar_espacios_blancos($t,$depurar=false){
-    sc_dev_depurar($depurar,$t);
+    sc_dev_depurar($depurar,$t,'sc_str_quitar_espacios_blancos');
     return trim(sc_str_reemplazar_expresion_regular($t,'(\n|\s|\t|\r)+',''));
 }
 
@@ -584,6 +605,11 @@ function sc_str_sin_caracteres_especiales($texto,$quitarTodos=true){
     return $texto;
 }
 
+function sc_str_to_oracion($t,$depurar=false){
+    sc_dev_depurar($depurar,$t,'sc_str_to_oracion');
+    return sc_is_string($t,1) && strtolower($t) === $t ? ucfirst($t) : $t;
+}
+
 /*FECHAS*/
 function sc_fec_formatear($fecha,$formato='Y-m-d H:i:s',$depurar=false){
     sc_dev_depurar($depurar,array($fecha,$formato),'sc_fec_formatear');
@@ -606,5 +632,63 @@ function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
 
     return false;
 }
+
+function sc_arr_to_json($arr,$arrayKeys=null,$depurar=false){
+    sc_dev_depurar($depurar,array($arr,$arrayKeys),'sc_arr_poner_keys');
+    if(sc_is_array($arr,1)){
+        if(sc_is_array($arrayKeys,1) && !sc_arr_contiene_keys($arr)){
+            $arr = sc_arr_poner_keys($arrayKeys,$arr);
+        }
+        return json_encode($arr);
+    }
+    return false;
+}
+
+function sc_arr_contiene_keys($arr,$depurar=false){
+    sc_dev_depurar($depurar,$arr,'sc_arr_contiene_keys');
+    $arr = array_keys($arr);
+    return (int) preg_grep('/(\D)+/g',$arr);
+}
+
+function sc_arr_poner_keys($arrayKeys,$arr,$depurar=false){
+    sc_dev_depurar($depurar,array($arrayKeys,$arr),'sc_arr_poner_keys');
+    if (sc_is_array($arrayKeys) && sc_is_array($arr)){
+        return array_combine($arrayKeys, $arr);
+    }
+    return false;
+}
+
+function sc_arr_unir($arr1,$arr2,$depurar=false){
+    sc_dev_depurar($depurar,array($arr1,$arr2),'sc_arr_unir');
+    if (sc_is_array($arr1,1) && sc_is_array($arr2,1) ){
+        return array_merge($arr1, $arr2);
+    }
+    return false;
+}
+
+/*IS*/
+function sc_is_string($t,$longitud=0,$depurar=false){
+    sc_dev_depurar($depurar,$t,'sc_is_string');
+    return is_string($t) && isset($t,$longitud);
+}
+
+function sc_is_url($url,$depurar=false){
+    sc_dev_depurar($depurar,$url,'sc_is_url');
+    if (sc_is_string($url,3)){
+       return filter_var($url,FILTER_VALIDATE_URL);
+    }
+    return false;
+}
+
+function sc_is_array($array,$count=0,$depurar=false){
+    sc_dev_depurar($depurar,$array($array,$count),'sc_is_array');
+    return is_array($array) &&  count($array) >= $count;
+}
+
+function sc_is_bool($obj,$depurar=false){
+    sc_dev_depurar($depurar,$obj,'sc_is_bool');
+    return is_bool($obj);
+}
+
 
 ?>
