@@ -14,11 +14,11 @@ sc_str_reemplazar_expresion_regular('Hola', '\w+',' ')
 ```
 sc_dev_echo('texto')
 ```
-* **sql:** manejo de testeo
+* **sql:** manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anterior para obtenerlo como global $pdoLibreria)
 ```
 sc_sql_lookup('SELECT * FROM usuario')
 ```
-* **js:** manejo de testeo
+* **js:** opciones típicas de JS
 ```
 sc_js_alert('texto')
 ```
