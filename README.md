@@ -10,9 +10,9 @@ Este se divide en distintas finalidades de funciones usando como prefijo `sc_`
 ```
 sc_str_reemplazar_expresion_regular('Hola', '\w+',' ')
 ```
-* **test:** manejo de testeo
+* **dev:** manejo de testeo
 ```
-sc_test_echo('texto')
+sc_dev_echo('texto')
 ```
 * **sql:** manejo de testeo
 ```
@@ -48,7 +48,7 @@ require_once '/scPHP.php'
 
 ## Ejecutando las pruebas
 
-Puedes escribir `sc_var_dump('prueba')` o `sc_test_var_dump('prueba')` para saber si esta fue instalada correctamente
+Puedes escribir `sc_var_dump('prueba')` o `sc_dev_var_dump('prueba')` para saber si esta fue instalada correctamente
 
 ## Construido con 
 
@@ -60,5 +60,5 @@ Este proyecto está bajo la Licencia (MIT)
 
 
 ---
-⌨️ con ❤️ por [yosoymitxel](https://github.com/yosoymitxel)
+Con ❤️ por [yosoymitxel](https://github.com/yosoymitxel)
 
