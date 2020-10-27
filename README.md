@@ -4,7 +4,7 @@ Librería con funciones varias para PHP.
 
 Este se divide en distintas finalidades de funciones usando como prefijo `sc_`
 
-**Ejemplo:** `sc_test_var_dump('prueba')`
+**Ejemplo:** `sc_dev_var_dump('prueba')`
 
 * **str:** manejo de string
 ```
