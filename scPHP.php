@@ -2,10 +2,23 @@
 /*
 Librería SC PHP
 Fecha de inicio: 11/08/2020
+
+Lista de categorías:
+
+DEV     = Debug
+DOM     = Manejo de DOM - HTML
+URL     = Manejo de Urls
+SQL     = Manejo de SQL
+js      = Opciones de JS
+STR     = Manejo de string
+FEC     = Manejo de fechas
+ARR     = Manejo de Arrays
+IS      = Tipo de variable
+
 */
 
 
-/*DEV*/
+/*###DEV###*/
 
 function sc_dev_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
     echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
@@ -82,7 +95,7 @@ function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name='')
 
 
 
-/*DOM*/
+/*###DOM###*/
 
 function sc_dom_get_atributos($arrayAtributos,$depurar=false){
     if(is_array($arrayAtributos)){
@@ -181,7 +194,7 @@ function sc_dom_cdn($id,$link,$tipo='css',$depurar=false){
     }
 }
 
-/*URL*/
+/*###URL###*/
 
 function sc_url_informacion_sitio_actual(){
     $indicesServer = array('PHP_SELF',
@@ -386,7 +399,7 @@ function sc_url_buscar_imagenes_google($busqueda){
     return $img_tags;
 }
 
-/*SQL*/
+/*###SQL###*/
 
 function sc_sql_lookup($sql){
     //echo $sql;
@@ -457,7 +470,7 @@ function sc_sql_exec_sql($sql,$array=null){
 }
 
 
-/*JAVASCRIPT*/
+/*###JS###*/
 
 function sc_js_alert($texto){
     echo "<script>alert('" . $texto . "' );</script>";
@@ -468,7 +481,7 @@ function sc_js_console_log($texto){
 }
 
 
-/*STRING*/
+/*###STR###*/
 function sc_str_existe_en_string($texto,$busqueda,$depurar=false){
     sc_dev_depurar($depurar,$texto,'sc_str_existe_en_string');
     return (strpos($texto,$busqueda) !== false);
@@ -610,14 +623,14 @@ function sc_str_to_oracion($t,$depurar=false){
     return sc_is_string($t,1) && strtolower($t) === $t ? ucfirst($t) : $t;
 }
 
-/*FECHAS*/
+/*###FEC###*/
 function sc_fec_formatear($fecha,$formato='Y-m-d H:i:s',$depurar=false){
     sc_dev_depurar($depurar,array($fecha,$formato),'sc_fec_formatear');
     return date($formato, strtotime($fecha));
 }
 
 
-/*ARRAY*/
+/*###ARR###*/
 function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
     sc_dev_depurar($depurar,array($array,$expresion),'sc_arr_incluye_expresion_regular');
 
@@ -666,7 +679,7 @@ function sc_arr_unir($arr1,$arr2,$depurar=false){
     return false;
 }
 
-/*IS*/
+/*###IS###*/
 function sc_is_string($t,$longitud=0,$depurar=false){
     sc_dev_depurar($depurar,$t,'sc_is_string');
     return is_string($t) && isset($t,$longitud);
