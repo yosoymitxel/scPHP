@@ -51,7 +51,7 @@ function sc_dev_contador_texto_para_pruebas($texto='Prueba',$valor = false) {
         $index = 0;
     }
     $index++;
-    echo "<p id='".li_str_url_amigable($texto)."-$index' class='m-0 p-0 w-100'>$texto: $index</p>";
+    echo "<p id='".sc_str_sin_caracteres_especiales($texto)."-$index' class='m-0 p-0 w-100'>$texto: $index</p>";
 }
 
 function sc_dev_echo_oculto($texto,$depurar=false,$id='id-oculto',$clase=''){
