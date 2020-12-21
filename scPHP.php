@@ -694,7 +694,7 @@ function sc_is_url($url,$depurar=false){
 }
 
 function sc_is_array($array,$count=0,$depurar=false){
-    sc_dev_depurar($depurar,$array($array,$count),'sc_is_array');
+    sc_dev_depurar($depurar,array($array,$count),'sc_is_array');
     return is_array($array) &&  count($array) >= $count;
 }
 
