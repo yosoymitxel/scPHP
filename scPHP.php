@@ -21,17 +21,17 @@ IS      = Tipo de variable
 /*###DEV###*/
 
 function sc_dev_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
-    echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
-        "<pre id='$id' class='$class' style='$style'>" :
-        "<$etiqueta id='$id' class='$class' style='$style'>";
-    var_dump($obj);
-    echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
-    sc_dom_etiqueta_fin($etiqueta);
+        echo (!sc_dom_etiqueta_inicio($etiqueta)) ?
+            "<pre id='$id' class='$class' style='$style'>" :
+            "<$etiqueta id='$id' class='$class' style='$style'>";
+        var_dump($obj);
+        echo (!sc_dom_etiqueta_inicio($etiqueta)) ? '</pre>' : "</$etiqueta>";
+        sc_dom_etiqueta_fin($etiqueta);
 }
 
 function sc_dev_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
-    $valor = ($valor!='') ?  ' : '.$valor: '';
-    echo("<$etiqueta id='$id' class='$class' style='$style' name='$name'>$t$valor</$etiqueta>");
+        $valor = ($valor!='') ?  ' : '.$valor: '';
+        echo("<$etiqueta id='$id' class='$class' style='$style' name='$name'>$t$valor</$etiqueta>");
 }
 
 function sc_dev_activar_depurar_global($condicion){
@@ -71,7 +71,7 @@ function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
         if(sc_is_array($obj,1)){
             $i = 0;
             foreach ($obj as $value){
-                sc_var_dump($value,"var-dump__$id-".++$i);
+                sc_var_dump($value,null,"var-dump__$id-".++$i);
             }
         }else{
             sc_var_dump($obj,"var-dump__$id");
@@ -98,8 +98,15 @@ function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name='')
 /*###DOM###*/
 
 function sc_dom_get_atributos($arrayAtributos,$depurar=false){
-    if(is_array($arrayAtributos)){
+    if(sc_is_array($arrayAtributos)){
         $atributos = '';
+        sc_dev_depurar(
+            $depurar,
+            array(
+                $arrayAtributos
+            ),
+            'sc_dom_get_atributos'
+        );
 
         foreach ($arrayAtributos as $atributo => $valor){
             if($depurar){
@@ -115,7 +122,7 @@ function sc_dom_get_atributos($arrayAtributos,$depurar=false){
 }
 
 function sc_dom_crear_elemento($etiqueta,$contenido,$depurar=false,$id='',$class='',$style='',$name=''){
-    if(isset($etiqueta{0})){
+    if(sc_is_string($etiqueta,1)){
         $atributos = array('id'=>$id,'class'=>$class,'style'=>$style,'name'=>$name);
         $elemento  = "<$etiqueta ".sc_dom_get_atributos($atributos,$depurar);
         echo $elemento.">$contenido</$etiqueta>";
@@ -126,7 +133,7 @@ function sc_dom_crear_elemento($etiqueta,$contenido,$depurar=false,$id='',$class
 }
 
 function sc_dom_crear_elemento_sin_cerrar($etiqueta,$depurar=false,$value='',$id='',$class='',$style='',$name='',$type='',$src='',$alt=''){
-    if(isset($etiqueta{0})){
+    if(sc_is_string($etiqueta,1)){
         $atributos = array('id'=>$id,'class'=>$class,'style'=>$style,'name'=>$name,'value'=>$value,'type'=>$type,'src'=>$src,'alt'=>$alt);
         $elemento  = "<$etiqueta ".sc_dom_get_atributos($atributos,$depurar);
         echo $elemento.">";
@@ -423,6 +430,7 @@ function sc_sql_lookup($sql){
 function sc_sql_secure_lookup($sql,$array=null,$depurar=false){
     global $pdoLibreria;
     $query = $pdoLibreria->prepare($sql);
+    $sqlResult[0][0] = false;
 
     try {
         $sqlResult = $query->execute($array);
@@ -449,6 +457,8 @@ function sc_sql_secure_lookup($sql,$array=null,$depurar=false){
             return $datos[0][0] = false;
         }
     } catch (Exception $e) {
+        sc_var_dump('Hubo un error: ');
+        sc_var_dump($e);
         return false;
     }
 }
@@ -649,6 +659,17 @@ function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
 function sc_arr_to_json($arr,$arrayKeys=null,$depurar=false){
     sc_dev_depurar($depurar,array($arr,$arrayKeys),'sc_arr_poner_keys');
     if(sc_is_array($arr,1)){
+        if(!sc_arr_contiene_keys($arr) && sc_arr_contiene_keys($arr) ){
+            $lista = '';
+
+            foreach ($arr as $valor){
+                $lista .= json_encode($valor).' , ';
+
+            }
+
+            return '['.substr($lista,0,-3).']';
+        }
+
         if(sc_is_array($arrayKeys,1) && !sc_arr_contiene_keys($arr)){
             $arr = sc_arr_poner_keys($arrayKeys,$arr);
         }
@@ -681,14 +702,23 @@ function sc_arr_unir($arr1,$arr2,$depurar=false){
 
 /*###IS###*/
 function sc_is_string($t,$longitud=0,$depurar=false){
-    sc_dev_depurar($depurar,$t,'sc_is_string');
-    return is_string($t) && isset($t,$longitud);
+    sc_dev_depurar(
+        $depurar,
+        array(
+            $t,
+            $longitud,
+            ( is_string($t) && isset($t{$longitud}) )
+        ),
+        'sc_is_string'
+    );
+    $longitud = ($longitud!=0) ? $longitud-1 : $longitud;
+    return is_string($t) && isset($t{$longitud});
 }
 
 function sc_is_url($url,$depurar=false){
     sc_dev_depurar($depurar,$url,'sc_is_url');
     if (sc_is_string($url,3)){
-       return filter_var($url,FILTER_VALIDATE_URL);
+        return filter_var($url,FILTER_VALIDATE_URL);
     }
     return false;
 }
