@@ -733,5 +733,17 @@ function sc_is_bool($obj,$depurar=false){
     return is_bool($obj);
 }
 
+function sc_is_int($num,$tamanio=false){
+    $tamanio = is_numeric($tamanio) ? $num >= $tamanio : true;
+    return is_int($num) && ($tamanio);
+}
 
+function sc_is_numeric($num,$tamanio=false){
+    $tamanio = is_numeric($tamanio) ? $num >= $tamanio : true;
+    return is_numeric($num) && ($tamanio);
+}
+function sc_is_float($num,$tamanio=false){
+    $tamanio = is_numeric($tamanio) ? $num >= $tamanio : true;
+    return is_float($num) && ($tamanio);
+}
 ?>
