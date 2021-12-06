@@ -347,7 +347,7 @@ function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho
     }
 }
 
-function dev_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/archivos/logos'){
+function sc_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/archivos/logos'){
     $url = (sc_str_inicia_con($url,'http://') || sc_str_inicia_con($url,'https://'))?
         $url :
         'http://'.$url ;
@@ -404,6 +404,29 @@ function sc_url_buscar_imagenes_google($busqueda){
         preg_match_all($img_pattern, $curlout, $img_tags);
     }
     return $img_tags;
+}
+
+function sc_url_str_a_url_amigable($t){
+    $caracteresInvalidos = explode(',', ".,\,,(,),[,],{,},!,¡,.,?,#,',\",`");
+    $letrasInvalidos     = explode(',', "á,é,í,ó,ú,Á,É,Í,Ó,Ú");
+    $letrasValidas       = explode(',', "a,e,i,o,u,a,e,i,o,u");
+    $conservar           = '0-9a-z\s\-'; // juego de caracteres a conservar
+    $regex               = sprintf('~[^%s]++~i', $conservar); // case insensitive
+
+    foreach ($caracteresInvalidos as $caracter) {
+        $t = str_replace($caracter, "", $t);
+    }
+
+    for($i = 0, $iMax = sizeof($letrasInvalidos); $i < $iMax; $i++) {
+        $t = str_replace($letrasInvalidos[$i], $letrasValidas[$i], $t);
+    }
+
+    $t = preg_replace($regex, '', $t);
+
+    $t = trim($t);
+    $t = strtolower(preg_replace('/\s+/','-', $t));
+
+    return $t;
 }
 
 /*###SQL###*/
