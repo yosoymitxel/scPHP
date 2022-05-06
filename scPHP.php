@@ -47,20 +47,24 @@ function sc_dev_echo_indice($titulo,$texto,$etiqueta='p',$id='',$class='',$style
 
 function sc_dev_contador_texto_para_pruebas($texto='Prueba',$valor = false) {
     static $index = 0;
+    
     if($valor===0){
         $index = 0;
     }
+
     $index++;
     echo "<p id='".sc_str_sin_caracteres_especiales($texto)."-$index' class='m-0 p-0 w-100'>$texto: $index</p>";
 }
 
 function sc_dev_echo_oculto($texto,$depurar=false,$id='id-oculto',$clase=''){
     echo "<div style='display: none;' class='$clase' id='$id'>";
+    
     if ($depurar){
         sc_var_dump($texto);
     }else{
         echo "<p>$texto</p>";
     }
+
     echo '</div>';
 }
 
@@ -68,6 +72,7 @@ function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
     if($condicion){
         sc_dom_etiqueta_inicio('div',"debug-$id",'w-100');
         sc_dom_crear_elemento('h3',$id,"debug-$id");
+        
         if(sc_is_array($obj,1)){
             $i = 0;
             foreach ($obj as $value){
@@ -76,6 +81,7 @@ function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
         }else{
             sc_var_dump($obj,"var-dump__$id");
         }
+
         sc_dom_etiqueta_fin('div');
     }
 }
@@ -100,6 +106,7 @@ function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name='')
 function sc_dom_get_atributos($arrayAtributos,$depurar=false){
     if(sc_is_array($arrayAtributos)){
         $atributos = '';
+        
         sc_dev_depurar(
             $depurar,
             array(
@@ -112,12 +119,15 @@ function sc_dom_get_atributos($arrayAtributos,$depurar=false){
             if($depurar){
                 sc_var_dump($atributo.' : '.$valor,'p');
             }
+
             $atributos .= ($valor)? $atributo.'="'.$valor.'", ' : '';
         }
 
         $atributos = implode(' ',(explode(',',$atributos)));
+        
         return $atributos;
     }
+
     return false;
 }
 
@@ -155,6 +165,7 @@ function sc_dom_crear_elemento_personalizado($etiqueta,$contenido,$arrayTipoAtri
     $arrayTemp = array_combine($arrayTipoAtributos,$arrayValorAtributos);
     $atributos = sc_dom_get_atributos($arrayTemp);
     echo "<$etiqueta $atributos>$contenido";
+   
     if($etiquetaCerrada){
         echo "</$etiqueta>";
     }
@@ -169,12 +180,16 @@ function sc_dom_etiqueta_inicio($etiqueta='',$id='',$class='',$style='',$name=''
     if(isset($etiqueta{1})){
         $atributos = array('id'=>$id,'class'=>$class,'style'=>$style,'name'=>$name);
         $elemento  = "<$etiqueta ";
+      
         foreach ($atributos as $atributo => $valor){
             $elemento .= ($atributo)? $atributo.'="'.$valor.'" ' : '';
         }
+
         echo $elemento.">";
+
         return true;
     }
+
     return false;
 }
 
@@ -183,11 +198,13 @@ function sc_dom_etiqueta_fin($etiqueta){
         echo "</$etiqueta>";
         return true;
     }
+
     return false;
 }
 
 function sc_dom_cdn($id,$link,$tipo='css',$depurar=false){
     sc_dev_depurar($depurar,array($id,$link,$tipo),'sc_dom_cdn');
+    
     switch ($tipo){
         case 'js':
         case 'javascript':
@@ -246,6 +263,7 @@ function sc_url_informacion_sitio_actual(){
         'ORIG_PATH_INFO') ;
 
     echo '<table cellpadding="10">' ;
+  
     foreach ($indicesServer as $arg) {
         if (isset($_SERVER[$arg])) {
             echo '<tr><td>'.$arg.'</td><td>' . $_SERVER[$arg] . '</td></tr>' ;
@@ -254,6 +272,7 @@ function sc_url_informacion_sitio_actual(){
             echo '<tr><td>'.$arg.'</td><td>-</td></tr>' ;
         }
     }
+
     echo '</table>' ;
 }
 
@@ -290,12 +309,14 @@ function sc_url_get_servidor($url){
         $urlProcesada = str_replace('https://','',$url[0]);
         $urlProcesada = str_replace('http://','',$urlProcesada);
     }
+
     return $urlProcesada;
 }
 
 function sc_url_borrar_cookies($depurar=false){
     if (isset($_SERVER['HTTP_COOKIE'])) {
         $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
+       
         foreach($cookies as $cookie) {
             $parts = explode('=', $cookie);
             $name  = trim($parts[0]);
@@ -307,11 +328,12 @@ function sc_url_borrar_cookies($depurar=false){
 
 function sc_url_get_youtube_title($video_id){
     $url = "http://www.youtube.com/watch?v=".$video_id;
-
     $str = file_get_contents($url);
+    
     if(strlen($str)>0){
         $str = trim(preg_replace('/\s+/', ' ', $str)); // supports line breaks inside <title>
         preg_match("/\<title\>(.*)\<\/title\>/i",$str,$title); // ignore case
+      
         return sc_str_reemplazar_expresion_regular($title[1],'/( \- YouTube)/','');
     }
 }
@@ -319,6 +341,7 @@ function sc_url_get_youtube_title($video_id){
 function sc_url_get_id_youtube($urlYoutube){
     $expresionUrl     = sc_str_corregir_expresion_regular('(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=(\w+|\-)+|youtu\.be\/(\w+|\-)+)');
     $expresionIdVideo = sc_str_corregir_expresion_regular('(((\?v=)[\w\-]+)|be\/\w+)');
+   
     return (sc_str_incluye_expresion_regular($urlYoutube,$expresionUrl)) ?
         substr(sc_str_extraer_expresion_regular($urlYoutube, $expresionIdVideo),3) :
         false;
@@ -327,6 +350,7 @@ function sc_url_get_id_youtube($urlYoutube){
 function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho='100%',$class="pt-2",$depurar=false){
     sc_dev_depurar($depurar,array($link,$altura,$ancho),'sc_url_generar_iframe_youtube');
     $enlace = sc_url_get_id_youtube(sc_str_quitar_espacios_blancos($link));
+   
     if($enlace){
         $altura = sc_str_incluye_expresion_regular($altura,'\d+(\%|px|vh|vmin|vw)')?($altura):($altura.'px');
         $ancho   = sc_str_incluye_expresion_regular($ancho  ,'\d+(\%|px|vh|vmin|vw)')?($ancho)  :  ($ancho.'px');
@@ -337,9 +361,11 @@ function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho
                 </iframe>
             </div>
         ';
+      
         if ($return){
             return $iframe;
         }
+
         echo $iframe;
         return true;
     }else{
@@ -382,18 +408,17 @@ function sc_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/arch
 
             //se cierra el manejador de ficheros
             fclose($fp);
-            //sc_var_dump('Subió',null,'w-100');
             return true;
         }
 
     }
-    //sc_var_dump('No subió',null,'w-100');
     return false;
 }
 
+//Falta corrección
 function sc_url_buscar_imagenes_google($busqueda){
     $img_pattern = '/<img[^>]+>/i';
-    //$datos = array();
+    
     if ($busqueda != '') {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.google.com.ar/search?q=".urlencode($busqueda.' -vertical -portada')."&source=lnms&tbm=isch&sa=X");
@@ -403,6 +428,7 @@ function sc_url_buscar_imagenes_google($busqueda){
         curl_close($ch);
         preg_match_all($img_pattern, $curlout, $img_tags);
     }
+
     return $img_tags;
 }
 
@@ -412,7 +438,7 @@ function sc_url_str_a_url_amigable($t){
     $letrasValidas       = explode(',', "a,e,i,o,u,a,e,i,o,u");
     $conservar           = '0-9a-z\s\-'; // juego de caracteres a conservar
     $regex               = sprintf('~[^%s]++~i', $conservar); // case insensitive
-
+    
     foreach ($caracteresInvalidos as $caracter) {
         $t = str_replace($caracter, "", $t);
     }
@@ -422,7 +448,6 @@ function sc_url_str_a_url_amigable($t){
     }
 
     $t = preg_replace($regex, '', $t);
-
     $t = trim($t);
     $t = strtolower(preg_replace('/\s+/','-', $t));
 
@@ -431,8 +456,8 @@ function sc_url_str_a_url_amigable($t){
 
 /*###SQL###*/
 
+//Falta corregir
 function sc_sql_lookup($sql){
-    //echo $sql;
     global $pdoLibreria;
     $query = $pdoLibreria->prepare($sql);
 
@@ -515,6 +540,7 @@ function sc_js_console_log($texto){
 
 
 /*###STR###*/
+
 function sc_str_existe_en_string($texto,$busqueda,$depurar=false){
     sc_dev_depurar($depurar,$texto,'sc_str_existe_en_string');
     return (strpos($texto,$busqueda) !== false);
@@ -541,6 +567,7 @@ function sc_str_generar_enlaces_html_de_string($texto,$depurar=false){
         ),
         'sc_str_generar_enlaces_html_de_string');
     $texto = sc_str_reemplazar_expresion_regular($texto,'&amp;','&');
+  
     return preg_replace(
         '#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',
         "<a href=\"$1\" target=\"_blank\">$3</a>$4",
@@ -551,6 +578,7 @@ function sc_str_generar_enlaces_html_de_string($texto,$depurar=false){
 function sc_str_reemplazar_expresion_regular($t,$expresion,$reemplazo,$depurar=false){
     $expresion = sc_str_corregir_expresion_regular($expresion);
     sc_dev_depurar($depurar,"t : $t expresion : $expresion reemplazo : $reemplazo ",'sc_str_reemplazar_expresion_regular');
+  
     return preg_replace(
         $expresion,
         $reemplazo,
@@ -561,11 +589,13 @@ function sc_str_reemplazar_expresion_regular($t,$expresion,$reemplazo,$depurar=f
 function sc_str_incluye_expresion_regular($t,$expresion,$depurar=false){
     $expresion = sc_str_corregir_expresion_regular($expresion);
     sc_dev_depurar($depurar,array($t,$expresion),'sc_str_incluye_expresion_regular');
+   
     return preg_match($expresion,$t);
 }
 
 function sc_str_corregir_expresion_regular($expresion,$depurar=false){
     sc_dev_depurar($depurar,array($expresion),'sc_str_corregir_expresion_regular');
+  
     return (sc_str_inicia_con($expresion,'/') && sc_str_finaliza_con($expresion,'/')) ?
         $expresion :
         '/'.$expresion.'/';
@@ -589,6 +619,7 @@ function sc_str_extraer_expresion_regular($t,$expresion,$depurar=false){
 
         $coincidencias = count($arrayResutl)>1? $arrayResutl : $arrayResutl[0];
     }
+
     return $coincidencias;
 }
 
@@ -600,6 +631,7 @@ function sc_str_inicia_con($t,$busqueda,$depurar=false){
 function sc_str_finaliza_con($t,$busqueda,$depurar=false){
     sc_dev_depurar($depurar,$t,'sc_str_finaliza_con');
     $cantidadCaracteres = strlen ($busqueda);
+    
     return ($cantidadCaracteres && substr($t, -$cantidadCaracteres) == $busqueda);
 }
 
@@ -656,7 +688,9 @@ function sc_str_to_oracion($t,$depurar=false){
     return sc_is_string($t,1) && strtolower($t) === $t ? ucfirst($t) : $t;
 }
 
+
 /*###FEC###*/
+
 function sc_fec_formatear($fecha,$formato='Y-m-d H:i:s',$depurar=false){
     sc_dev_depurar($depurar,array($fecha,$formato),'sc_fec_formatear');
     return date($formato, strtotime($fecha));
@@ -664,11 +698,13 @@ function sc_fec_formatear($fecha,$formato='Y-m-d H:i:s',$depurar=false){
 
 
 /*###ARR###*/
+
 function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
     sc_dev_depurar($depurar,array($array,$expresion),'sc_arr_incluye_expresion_regular');
 
     if (is_array($array) && isset($expresion{1})){
         $expresion = sc_str_corregir_expresion_regular($expresion);
+       
         foreach ($array as $valor){
             if (sc_str_incluye_expresion_regular($valor,$expresion)){
                 return true;
@@ -681,6 +717,7 @@ function sc_arr_incluye_expresion_regular($array,$expresion,$depurar=false){
 
 function sc_arr_to_json($arr,$arrayKeys=null,$depurar=false){
     sc_dev_depurar($depurar,array($arr,$arrayKeys),'sc_arr_poner_keys');
+  
     if(sc_is_array($arr,1)){
         if(!sc_arr_contiene_keys($arr) && sc_arr_contiene_keys($arr) ){
             $lista = '';
@@ -696,30 +733,37 @@ function sc_arr_to_json($arr,$arrayKeys=null,$depurar=false){
         if(sc_is_array($arrayKeys,1) && !sc_arr_contiene_keys($arr)){
             $arr = sc_arr_poner_keys($arrayKeys,$arr);
         }
+
         return json_encode($arr);
     }
+
     return false;
 }
 
 function sc_arr_contiene_keys($arr,$depurar=false){
     sc_dev_depurar($depurar,$arr,'sc_arr_contiene_keys');
     $arr = array_keys($arr);
+    
     return (int) preg_grep('/(\D)+/g',$arr);
 }
 
 function sc_arr_poner_keys($arrayKeys,$arr,$depurar=false){
     sc_dev_depurar($depurar,array($arrayKeys,$arr),'sc_arr_poner_keys');
+    
     if (sc_is_array($arrayKeys) && sc_is_array($arr)){
         return array_combine($arrayKeys, $arr);
     }
+
     return false;
 }
 
 function sc_arr_unir($arr1,$arr2,$depurar=false){
     sc_dev_depurar($depurar,array($arr1,$arr2),'sc_arr_unir');
+    
     if (sc_is_array($arr1,1) && sc_is_array($arr2,1) ){
         return array_merge($arr1, $arr2);
     }
+
     return false;
 }
 
@@ -735,14 +779,17 @@ function sc_is_string($t,$longitud=0,$depurar=false){
         'sc_is_string'
     );
     $longitud = ($longitud!=0) ? $longitud-1 : $longitud;
+    
     return is_string($t) && isset($t{$longitud});
 }
 
 function sc_is_url($url,$depurar=false){
     sc_dev_depurar($depurar,$url,'sc_is_url');
+    
     if (sc_is_string($url,3)){
         return filter_var($url,FILTER_VALIDATE_URL);
     }
+    
     return false;
 }
 
