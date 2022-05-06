@@ -1,7 +1,7 @@
 <?php
 /*
 Librería SC PHP
-Fecha de inicio: 11/08/2020
+Fecha de inicio: 3/08/2020
 
 Lista de categorías:
 
