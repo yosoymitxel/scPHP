@@ -75,6 +75,7 @@ function sc_dev_depurar($condicion,$obj,$id='id-depuracion'){
         
         if(sc_is_array($obj,1)){
             $i = 0;
+            
             foreach ($obj as $value){
                 sc_var_dump($value,null,"var-dump__$id-".++$i);
             }
@@ -98,7 +99,6 @@ function sc_var_dump($obj,$etiqueta='',$id='',$class='',$style=''){
 function sc_echo($t,$valor='',$etiqueta='p',$id='',$class='',$style='',$name=''){
     sc_dev_echo($t,$valor,$etiqueta,$id,$class,$style,$name);
 }
-
 
 
 /*###DOM###*/
@@ -217,6 +217,7 @@ function sc_dom_cdn($id,$link,$tipo='css',$depurar=false){
             break;
     }
 }
+
 
 /*###URL###*/
 
@@ -453,6 +454,7 @@ function sc_url_str_a_url_amigable($t){
 
     return $t;
 }
+
 
 /*###SQL###*/
 
@@ -789,7 +791,7 @@ function sc_is_url($url,$depurar=false){
     if (sc_is_string($url,3)){
         return filter_var($url,FILTER_VALIDATE_URL);
     }
-    
+
     return false;
 }
 
