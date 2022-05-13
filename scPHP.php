@@ -455,6 +455,11 @@ function sc_url_str_a_url_amigable($t){
     return $t;
 }
 
+function sc_url_redirect($url, $statusCode = 303){
+   header('Location: ' . $url, true, $statusCode);
+   die();
+}
+
 
 /*###SQL###*/
 
