@@ -218,6 +218,13 @@ function sc_dom_cdn($id,$link,$tipo='css',$depurar=false){
     }
 }
 
+function sc_dom_generar_tabla($arrayContenido, $arrayTitulos = [], $id = '', $class='' ){
+        if(sc_is_array($arrayContenido)){
+
+        }
+        return false
+}
+
 
 /*###URL###*/
 
