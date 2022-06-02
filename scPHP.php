@@ -194,7 +194,7 @@ function sc_dom_etiqueta_inicio($etiqueta='',$id='',$class='',$style='',$name=''
 }
 
 function sc_dom_etiqueta_fin($etiqueta){
-    if(isset($etiqueta{1})){
+    if(isset($etiqueta[1])){
         echo "</$etiqueta>";
         return true;
     }
@@ -220,9 +220,46 @@ function sc_dom_cdn($id,$link,$tipo='css',$depurar=false){
 
 function sc_dom_generar_tabla($arrayContenido, $arrayTitulos = [], $id = '', $class='' ){
         if(sc_is_array($arrayContenido)){
+            $tableHtml = "<table id='$id' class='$class'>";
 
+            if(sc_arr_contiene_keys($arrayContenido) && !$arrayTitulos){
+                $arrayTitulos = array_keys($arrayContenido);
+            }
+
+            if(!$arrayTitulos){
+                $tableHtml .= '<thead>
+                                <th>';
+
+                foreach($arrayTitulos as $value){
+                    $tableHtml .= "<td>$value</td>";
+                }
+
+                $tableHtml .= '</th>
+                            </thead>';
+            }
+
+            $tableHtml .= '<tbody>';
+
+            foreach($arrayContenido as $value){
+                if(sc_is_array($value)){
+                    $tableHtml .= '<tr>';
+
+                    foreach( $value as $row){
+                        $tableHtml .= "<td>$row</td>";
+                    }
+
+                    $tableHtml .= '</tr>';
+
+                }else{
+                    $tableHtml .= "<tr><td>$value</td></tr>";
+                }
+            }
+
+            $tableHtml .= '</tbody>
+                        </table>';
         }
-        return false
+
+        return false;
 }
 
 
@@ -381,7 +418,7 @@ function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho
     }
 }
 
-function sc_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/archivos/logos'){
+function sc_url_descargar_imagen_al_servidor($url,$serverURl , $direccionCarpeta='assets/archivos/logos'){
     $url = (sc_str_inicia_con($url,'http://') || sc_str_inicia_con($url,'https://'))?
         $url :
         'http://'.$url ;
@@ -393,11 +430,9 @@ function sc_url_descargar_imagen_al_servidor($url,$direccionCarpeta='assets/arch
     //sc_dev_echo_indice($url,$direccionCarpeta);
     //sc_var_dump(is_file(SERVERURL . "$direccionCarpeta/$nombreImagen"));
 
-    if (!is_file(SERVERURL . "$direccionCarpeta/$nombreImagen")) {
+    if (!is_file($serverURl . "$direccionCarpeta/$nombreImagen")) {
         //abrimos un fichero donde guardar la descarga de la web
-        //sc_var_dump("$direccionCarpeta/$nombreImagen.png");
         $fp = fopen("$direccionCarpeta/$nombreImagen.png", "w");
-        //sc_var_dump("https://www.google.com/s2/favicons?domain=$url");
 
         if($fp){
             // Se crea un manejador CURL
@@ -470,6 +505,77 @@ function sc_url_redirect($url, $statusCode = 303){
 
 /*###SQL###*/
 
+function sc_sql_conexion($host, $bbdd, $user, $pass, $puerto = '3306', $opcionesPDO = [], $driver='mysql'){
+    try {
+        $dsn = "$driver:host=$host;dbname=$bbdd;port=$puerto";
+        $dbh = new PDO($dsn, $user, $pass, $opcionesPDO);
+        
+        $dbh->setAttribute(PDO::ATTRR_ERRMODE, PDO::ERRMODE_SILENT);
+        $dbh->setAttribute(PDO::ATTRR_ERRMODE, PDO::ERRMODE_WARNING);
+        $dbh->setAttribute(PDO::ATTRR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
+        return $dbh;
+
+    } catch (PDOException $e){
+        echo $e->getMessage();
+    }
+    
+}
+
+function sc_sql_select($conexion, $sql, $parametros = [], $tipoPDOFech = PDO::FETCH_ASSOC, $depurar = false){
+    $query = $conexion->prepare($sql);
+   
+    try {
+        $sqlResult = $query->execute($parametros);
+
+        if ($sqlResult) {
+            $sqlResult = $query->fetchAll($tipoPDOFech);
+            $sqlResult = count($sqlResult) > 0 ? $sqlResult : false;
+
+        }else{
+            $sqlResult = false;
+        }
+
+        if ($depurar){
+            sc_echo('Debug de sc_sql_secure_lookup (4):');
+            sc_var_dump($sql);
+            sc_var_dump($parametros);
+            sc_var_dump($tipoPDOFech);
+            sc_var_dump($sqlResult);
+        }
+
+        return $sqlResult;
+
+    } catch (Exception $e) {
+        sc_var_dump('Hubo un error: ');
+        sc_var_dump($e);
+        return false;
+    }
+}
+
+function sc_sql_execute($conexion, $sql, $parametros = null, $depurar = false){
+    $query = $conexion->prepare($sql);
+
+    try {
+        $execResult = $query->execute($parametros);
+
+        if ($depurar){
+            sc_echo('Debug de sc_sql_secure_lookup (4):');
+            sc_var_dump($sql);
+            sc_var_dump($parametros);
+            sc_var_dump($execResult);
+        }
+
+        return !!( $execResult );
+
+    } catch (Exception $e) {
+        sc_var_dump('Hubo un error: ');
+        sc_var_dump($e);
+        return false;
+    }
+
+}
+
 //Falta corregir
 function sc_sql_lookup($sql){
     global $pdoLibreria;
@@ -491,8 +597,8 @@ function sc_sql_lookup($sql){
 
 function sc_sql_secure_lookup($sql,$array=null,$depurar=false){
     global $pdoLibreria;
-    $query = $pdoLibreria->prepare($sql);
-    $sqlResult[0][0] = false;
+    $query     = $pdoLibreria->prepare($sql);
+    $sqlResult = false;
 
     try {
         $sqlResult = $query->execute($array);
@@ -514,7 +620,7 @@ function sc_sql_secure_lookup($sql,$array=null,$depurar=false){
                 }
             }
 
-            return count($sqlResult)!=0?$sqlResult:false;
+            return count($sqlResult) != 0 ? $sqlResult:false;
         }else{
             return $datos[0][0] = false;
         }
