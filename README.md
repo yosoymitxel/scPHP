@@ -32,7 +32,6 @@ Se utiliza para creación de elementos HTML
 ### Ejemplos:
 ```
 sc_dom_crear_elemento();
-
 ```
 
 ## URL
@@ -43,11 +42,12 @@ Es informativo así como sirve para manejo de urls.
 sc_url_informacion_sitio_actual()
 ```
 
-* **sql:** manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anterior para obtenerlo como global $pdoLibreria)
-**Ejemplos:**
+## SQL
+Manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anterior para obtenerlo como global $pdoLibreria)
+
+### Ejemplos:
 ```
 sc_sql_lookup('SELECT * FROM usuario');
-
 ```
 
 ## STR
@@ -69,40 +69,57 @@ sc_str_extraer_expresion_regular('1 - Hola mundo 2','\d'); // [1,2]
 sc_str_incluye_expresion_regular('Hola mundo', '\d') // false
 ```
 
-* **js:** opciones típicas de JS
+## JS
+Opciones típicas de JS
+
+### Ejemplos
+
 ```
 sc_js_alert('texto')
 ```
-* **is:** saber que tipo de dato es
+## IS
+Saber que tipo de dato es
+
+
+### Ejemplos
+
 ```
 sc_is_array(array('valor'))
 ```
 
-* **arr:** manejo de array
+## ARR
+Manejo de array.
+
+### Ejemplos
+
 ```
 sc_arr_incluye_expresion_regular(array('prueba'),'\w+')
 ```
-* **fec:** manejo de fechas
+## FEC
+Manejo de fechas.
+
+### Ejemplos
+
 ```
 sc_fec_formatear('2021-12-12 02:20:00','Y-m-d')
 ```
 
-## Instalación 
+# Instalación 
 #### Al descargarla para añadir se incluye con un require
 
 ```
 require_once '/scPHP.php'
 ```
 
-## Ejecutando las pruebas
+# Ejecutando las pruebas
 
 Puedes escribir `sc_var_dump('prueba')` o `sc_dev_var_dump('prueba')` para saber si esta fue instalada correctamente
 
-## Construido con 
+# Construido con 
 
 * PHP - Lenguaje de programación
 
-## Licencia 
+# Licencia 
 
 Este proyecto está bajo la Licencia (MIT) 
 
