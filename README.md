@@ -11,7 +11,7 @@ Este se divide en distintas finalidades de funciones usando como prefijo `sc_`
 sc_dev_var_dump('prueba')
 ```
 
-### DEV
+### 1) DEV
 Aquí encontramos funciones para hacer testeos rápidos siguiendo la filosofía "echo a todo lo que se mueva" asímismo poner información solo visible desde el DOM, etc.
 
 #### Ejemplos:
@@ -26,7 +26,7 @@ sc_dev_activar_depurar_global(true); // Activa o desactiva el modo debug de php
 sc_dev_echo_oculto('Esto solo lo veremos desde el HTML del sitio', true, 'id-para-ubicar-en-el-dom') // Imprime un var dump oculto dentro del DOM
 ```
 
-### DOM
+### 2) DOM
 Se utiliza para creación de elementos HTML
 
 #### Ejemplos:
@@ -34,15 +34,15 @@ Se utiliza para creación de elementos HTML
 sc_dom_crear_elemento();
 ```
 
-## URL
+### 3) URL
 Es informativo así como sirve para manejo de urls.
 
-### Ejemplos:
+#### Ejemplos:
 ```
 sc_url_informacion_sitio_actual()
 ```
 
-### SQL
+### 4) SQL
 Manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anterior para obtenerlo como global $pdoLibreria)
 
 #### Ejemplos:
@@ -50,9 +50,8 @@ Manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anter
 sc_sql_lookup('SELECT * FROM usuario');
 ```
 
-### STR
-
-* Sirve para el manejo de strings desde expresiones regulares, cambios de casos (lower, upper, etc.), quitar espacios en blanco, saber si comieza o termina con alguna expresion, etc.
+### 5) STR
+Sirve para el manejo de strings desde expresiones regulares, cambios de casos (lower, upper, etc.), quitar espacios en blanco, saber si comieza o termina con alguna expresion, etc.
 
 #### Ejemplos:
 ```
@@ -69,7 +68,7 @@ sc_str_extraer_expresion_regular('1 - Hola mundo 2','\d'); // [1,2]
 sc_str_incluye_expresion_regular('Hola mundo', '\d') // false
 ```
 
-### JS
+### 6) JS
 Opciones típicas de JS
 
 #### Ejemplos
@@ -77,7 +76,7 @@ Opciones típicas de JS
 ```
 sc_js_alert('texto')
 ```
-### IS
+### 7) IS
 Saber que tipo de dato es
 
 #### Ejemplos
@@ -86,7 +85,7 @@ Saber que tipo de dato es
 sc_is_array(array('valor'))
 ```
 
-### ARR
+### 8) ARR
 Manejo de array.
 
 #### Ejemplos
@@ -94,7 +93,7 @@ Manejo de array.
 ```
 sc_arr_incluye_expresion_regular(array('prueba'),'\w+')
 ```
-### FEC
+### 9) FEC
 Manejo de fechas.
 
 #### Ejemplos
