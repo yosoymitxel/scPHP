@@ -26,6 +26,15 @@ sc_dev_activar_depurar_global(true); // Activa o desactiva el modo debug de php
 sc_dev_echo_oculto('Esto solo lo veremos desde el HTML del sitio', true, 'id-para-ubicar-en-el-dom') // Imprime un var dump oculto dentro del DOM
 ```
 
+## DOM
+Se utiliza para creación de elementos HTML
+
+### Ejemplos:
+```
+sc_dom_crear_elemento();
+
+```
+
 ## URL
 Es informativo así como sirve para manejo de urls.
 
