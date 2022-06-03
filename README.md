@@ -4,12 +4,17 @@ Librería con funciones varias para PHP que nace a fin de simplicar ciertas tare
 
 ## Grupos de funcionalidades
 
-Este se divide en distintas finalidades de funciones usando como prefijo `sc_`
+Este se divide en distintas finalidades de funciones usando como prefijo para toda la libería siempre primero `sc_` seguido de la abreviatura del grupo de funcionalidades.
 
-#### Ejemplo:
+#### Ejemplos:
 ```
 sc_dev_var_dump('prueba')
 ```
+Donde `sc_` es el prefijo de la librería y `dev_` indica que será del grupo development.
+```
+sc_str_contiene('Hola mundo', 'Hola');
+```
+Donde `sc_` es el prefijo de la librería y `str_` indica que será del grupo de manejo strings.
 
 ### 1) DEV
 Aquí encontramos funciones para hacer testeos rápidos siguiendo la filosofía "echo a todo lo que se mueva" asímismo poner información solo visible desde el DOM, etc.
