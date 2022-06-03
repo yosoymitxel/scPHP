@@ -1,23 +1,65 @@
-# scPHP
+# Librería de funciones útiles PHP - scPHP
 
-Librería con funciones varias para PHP.
+Librería con funciones varias para PHP que nace a fin de simplicar ciertas tareas del lenguaje o versatilizar funciones ya existentes en este por medio de la parametrización y la evasión de excepciones.
+
+# Grupos de funcionalidades
 
 Este se divide en distintas finalidades de funciones usando como prefijo `sc_`
 
-**Ejemplo:** `sc_dev_var_dump('prueba')`
+### Ejemplo:
+```
+sc_dev_var_dump('prueba')
+```
 
-* **str:** manejo de string
+## DEV
+Aquí encontramos funciones para hacer testeos rápidos siguiendo la filosofía "echo a todo lo que se mueva" asímismo poner información solo visible desde el DOM, etc.
+
+### Ejemplos:
+
 ```
-sc_str_reemplazar_expresion_regular('Hola', '\w+',' ')
+sc_dev_echo('Título', 'Valor') // <p id='' class='' style='' name=''>Título: Valor</p>
+
+sc_dev_var_dump([1,2]); // Imprime con una etiqueta <pre> un var_dump
+
+sc_dev_activar_depurar_global(true); // Activa o desactiva el modo debug de php
+
+sc_dev_echo_oculto('Esto solo lo veremos desde el HTML del sitio', true, 'id-para-ubicar-en-el-dom') // Imprime un var dump oculto dentro del DOM
 ```
-* **dev:** manejo de testeo
+
+## URL
+Es informativo así como sirve para manejo de urls.
+
+### Ejemplos:
 ```
-sc_dev_echo('texto')
+sc_url_informacion_sitio_actual()
 ```
+
 * **sql:** manejo de sql (actualmente requiere una variable $pdoLibreria en un escope anterior para obtenerlo como global $pdoLibreria)
+**Ejemplos:**
 ```
-sc_sql_lookup('SELECT * FROM usuario')
+sc_sql_lookup('SELECT * FROM usuario');
+
 ```
+
+## STR
+
+* Sirve para el manejo de strings desde expresiones regulares, cambios de casos (lower, upper, etc.), quitar espacios en blanco, saber si comieza o termina con alguna expresion, etc.
+
+### Ejemplos:
+```
+sc_str_reemplazar_expresion_regular('Hola mundo 123', '\d+',' '); //Hola mundo 
+
+sc_str_quitar_espacios_blancos('Hola mundo,   esto es una      prueba'); //Holamundo,estoesunaprueba
+
+sc_str_sin_caracteres_especiales('Eso está ahí'); //Eso esta ahi
+
+sc_str_contiene('Hola mundo', 'Hola'); // true
+
+sc_str_extraer_expresion_regular('1 - Hola mundo 2','\d'); // [1,2]
+
+sc_str_incluye_expresion_regular('Hola mundo', '\d') // false
+```
+
 * **js:** opciones típicas de JS
 ```
 sc_js_alert('texto')
@@ -26,10 +68,7 @@ sc_js_alert('texto')
 ```
 sc_is_array(array('valor'))
 ```
-* **url:** manejo de url
-```
-sc_url_informacion_sitio_actual()
-```
+
 * **arr:** manejo de array
 ```
 sc_arr_incluye_expresion_regular(array('prueba'),'\w+')
