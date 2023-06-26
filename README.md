@@ -1,8 +1,23 @@
 # Librería de funciones útiles PHP - scPHP
 
-Librería con funciones varias para PHP que nace a fin de simplicar ciertas tareas del lenguaje o versatilizar funciones ya existentes en este por medio de la parametrización y la evasión de excepciones.
+scPHP es una librería de PHP que contiene una serie de funciones y clases que facilitan el desarrollo de aplicaciones web en PHP. La librería incluye funciones para el manejo de string, la validación de formularios, gestión de bases de datos, la manipulación de expresiones regulares y mucho más.
 
-## Grupos de funcionalidades
+## Categorías
+
+scPHP está organizada en diferentes categorías que agrupan las funciones según su funcionalidad. Aquí hay una lista de las categorías disponibles:
+
+* DEV: Debug
+* DOM: Manejo de DOM - HTML
+* URL: Manejo de URLs
+* SQL: Manejo de SQL
+* JS: Opciones de JavaScript
+* STR: Manejo de strings
+* FEC: Manejo de fechas
+* ARR: Manejo de arrays
+* IS: Tipo de variable
+Cada categoría incluye una serie de funciones que facilitan el desarrollo de aplicaciones web en PHP.
+
+## Categorías en sus grupos de funcionalidades
 
 Este se divide en distintas finalidades de funciones usando como prefijo para toda la libería siempre primero `sc_` seguido de la abreviatura del grupo de funcionalidades.
 
