@@ -123,12 +123,23 @@ sc_fec_formatear('2021-12-12 02:20:00','Y-m-d')
 ```
 
 ## Instalación 
-#### Al descargarla para añadir se incluye con un require
+#### Al descargarla para añadir se incluye con un require:
 
 ```
 require_once '/scPHP.php'
 ```
 
+#### O... Instala vía composer:
+
+Edita tu composer.json para incluir lo siguiente:
+
+```json
+{
+    "require": {
+        "yosoymitxel/scphp": "~2.0"
+    }
+}
+```
 ## Ejecutando las pruebas
 
 Puedes escribir `sc_var_dump('prueba')` o `sc_dev_var_dump('prueba')` para saber si esta fue instalada correctamente
