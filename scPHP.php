@@ -392,6 +392,16 @@ function sc_url_get_id_youtube($urlYoutube){
         false;
 }
 
+function sc_url_link_descarga_youtube($video_id){
+    $html = file_get_html('https://www.yt-download.org/file/mp3/'.$video_id);
+    // Find all links
+    foreach($html->find('a') as $element){
+        if (sc_str_contiene($element->href,'/192/')){
+            return $element->href;
+        }
+    }
+}
+
 function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho='100%',$class="pt-2",$depurar=false){
     sc_dev_depurar($depurar,array($link,$altura,$ancho),'sc_url_generar_iframe_youtube');
     $enlace = sc_url_get_id_youtube(sc_str_quitar_espacios_blancos($link));
