@@ -418,6 +418,23 @@ function sc_url_generar_iframe_youtube($link,$return=false,$altura='30vh',$ancho
     }
 }
 
+function sc_url_youtube_extraer_enlaces_de_video_lista_de_reproduccion($urlListaDeReproduccion) {
+  // Obtener el HTML de la lista de reproducción
+  $htmlListaDeReproduccion = file_get_contents($urlListaDeReproduccion);
+
+  // Analizar el HTML para extraer los ID de los videos
+  preg_match_all('/watch\?v=(?P<videoID>[a-zA-Z0-9-_]{11})/', $htmlListaDeReproduccion, $coincidencias);
+  $idsDeVideo = $coincidencias['videoID'];
+
+  // Construir las URLs completas de los videos
+  $enlacesDeVideo = array_map(function ($idDeVideo) {
+    return "https://www.youtube.com/watch?v=$idDeVideo";
+  }, $idsDeVideo);
+
+  // Devolver una lista única de enlaces de video (eliminando duplicados)
+  return array_unique($enlacesDeVideo);
+}
+
 function sc_url_descargar_imagen_al_servidor($url,$serverURl , $direccionCarpeta='assets/archivos/logos'){
     $url = (sc_str_inicia_con($url,'http://') || sc_str_inicia_con($url,'https://'))?
         $url :
@@ -886,6 +903,9 @@ function sc_arr_unir($arr1,$arr2,$depurar=false){
 
     return false;
 }
+
+
+
 
 /*###IS###*/
 function sc_is_string($t,$longitud=0,$depurar=false){
